@@ -81,7 +81,7 @@ void *ip_protocol_loop(void *arg)
   	int timer_no = 1;
   	cache_info temp;
   	int n = 0;
-  
+
   	while(1)
   	{
     	ip_queue.recv(&event,&buf,sizeof(buf));
@@ -290,14 +290,14 @@ void *main_protocol_loop(void *arg)
       int size = message.size();*/
 
       unsigned int concatd = (192 << 24) + (168 << 16) + (1 << 8) + 10;
-	
+
 		// check if target IP is in the lab
       	/*if (userReq[0] == 192 && userReq[1] == 168 && userReq[2] == 1)
       	{
         	printf("\n**************************\n");
 		    printf("Target IP is in the lab...\n");
     	}
-		else 
+		else
 		{
         	printf("\n**************************\n");
 		    printf("Target IP is NOT in the lab...\n");
@@ -309,62 +309,8 @@ void *main_protocol_loop(void *arg)
 
       	// IP-MAC pair is located in the cache - Form packet and send ARP reply
       	if(cache.find(concatd) != cache.end()){
-        	/*memcpy(fake.dst_mac, cache[concatd], sizeof(cache[concatd]));
-        	memcpy(fake.src_mac, net.get_mac(), sizeof(net.get_mac()));
-        	fake.prot[0] = 0x08;
-        	fake.prot[1] = 0x00;
-        	fake.data[0] = 0x45; // IP Version (4) & IP Header Length (5)
-        	fake.data[1] = 0x00; // Type of Service
-        	fake.data[2] = 0x00; // Total Length (byte0)
-        	fake.data[3] = 0x54; // Total Length (byte1)
-        	fake.data[4] = 0x52; // ID (b0)
-        	fake.data[5] = 0x6f; // ID (b1)
-        	fake.data[6] = 0x40; // F & Fragment (b0.5)
-        	fake.data[7] = 0x0; // Fragment (b1)
-        	fake.data[8] = 0x40; // Time to Live
-        	fake.data[9] = 0x1; // Protocol
-        	fake.data[10] = 0x0; // Header checksum (b0) - initialized as 0
-        	fake.data[11] = 0x0; // Header checksum (b1)
-        	fake.data[12] = 192; // Source IP
-        	fake.data[13] = 168;
-        	fake.data[14] = 1;
-        	fake.data[15] = curr_ip;
-        	fake.data[16] = 192; // Destination IP
-        	fake.data[17] = 168;
-        	fake.data[18] = 1;
-        	fake.data[19] = 20;
-        	int sum = checksum(&fake.data[0], 20, 0);
-        	fake.data[10] = ~sum >> 8; // Header checksum (b0)
-        	fake.data[11] = ~sum & 0xff; // Header checksum (b1)
-        	fake.data[20] = 0x8; // ICMP Header - Type - ICMP Request - 8, Reply - 0
-        	fake.data[21] = 0x0; // ICMP Header - Code - 0
-        	fake.data[22] = 0x0; // ICMP Header - checksum (b0) - initialized as 0
-        	fake.data[23] = 0x0; // ICMP Header - checksum (b1)
-        	fake.data[24] = 0x52; // ICMP Header - ID (b0)
-        	fake.data[25] = 0x6d; // ICMP Header - ID (b1)
-        	fake.data[26] = 0x00; // ICMP Header - Sequence (b0)
-        	fake.data[27] = 0x01; // ICMP Header - Sequence (b1)
-        	fake.data[28] = 0x0; // Data
-        	fake.data[29] = 0x0;
-        	fake.data[30] = 0x0;
-        	fake.data[31] = 0x0;
-        	fake.data[32] = 0x0;
-        	fake.data[33] = 0x0;
-        	fake.data[34] = 0x0;
-        	fake.data[35] = 0x0;
-          for(int i = 0; i < size; i++)
-          {
-            fake.data[36+i] = message[i];
-          }
-        	sum = checksum(&fake.data[20], 36+size, 0);
-        	fake.data[22] = ~sum >> 8; // Header checksum (b0)
-        	fake.data[23] = ~sum & 0xff; // Header checksum (b1)*/
 
 			send_packet(fake);
-        	/*printf("Data: ");
-          	for(int i = 28; i < 36; i++)
-            	printf("%02x ",fake.data[i]);
-          	printf("\n**************************\n\n");*/
 
             net.send_frame(&fake, 1518);
       	}
@@ -403,66 +349,11 @@ void *main_protocol_loop(void *arg)
 
         	// Send ARP Request
         	int n = net.send_frame(&fake, 42);
-      
+
       		// Allow a moment for chatter (sometimes in the baseball field, however, preferably would be on the ethernet cables)
       		while(cache.find(concatd) == cache.end()){}
-	
-	        /*memcpy(fake.dst_mac, cache[concatd], sizeof(cache[concatd]));
-        	memcpy(fake.src_mac, net.get_mac(), sizeof(net.get_mac()));
-        	fake.prot[0] = 0x08;
-        	fake.prot[1] = 0x00;
-        	fake.data[0] = 0x45; // IP Version (4) & IP Header Length (5)
-        	fake.data[1] = 0x00; // Type of Service
-        	fake.data[2] = 0x00; // Total Length (byte0)
-        	fake.data[3] = 0x54; // Total Length (byte1)
-        	fake.data[4] = 0x52; // ID (b0)
-        	fake.data[5] = 0x6f; // ID (b1)
-        	fake.data[6] = 0x40; // F & Fragment (b0.5)
-        	fake.data[7] = 0x0; // Fragment (b1)
-        	fake.data[8] = 0x40; // Time to Live
-        	fake.data[9] = 0x1; // Protocol
-        	fake.data[10] = 0x0; // Header checksum (b0) - initialized as 0
-        	fake.data[11] = 0x0; // Header checksum (b1)
-        	fake.data[12] = 192; // Source IP
-        	fake.data[13] = 168;
-        	fake.data[14] = 1;
-        	fake.data[15] = curr_ip;
-        	fake.data[16] = 192; // Destination IP
-          fake.data[17] = 168;
-          fake.data[18] = 1;
-          fake.data[19] = 20;
-        	int sum = checksum(&fake.data[0], 20, 0);
-        	fake.data[10] = ~sum >> 8; // Header checksum (b0)
-        	fake.data[11] = ~sum & 0xff; // Header checksum (b1)
-        	fake.data[20] = 0x8; // ICMP Header - Type - ICMP Request - 8, Reply - 0
-        	fake.data[21] = 0x0; // ICMP Header - Code - 0
-        	fake.data[22] = 0x0; // ICMP Header - checksum (b0) - initialized as 0
-        	fake.data[23] = 0x0; // ICMP Header - checksum (b1)
-        	fake.data[24] = 0x52; // ICMP Header - ID (b0)
-        	fake.data[25] = 0x6d; // ICMP Header - ID (b1)
-        	fake.data[26] = 0x00; // ICMP Header - Sequence (b0)
-        	fake.data[27] = 0x01; // ICMP Header - Sequence (b1)
-        	fake.data[28] = 0x0; // Data
-        	fake.data[29] = 0x0;
-        	fake.data[30] = 0x0;
-        	fake.data[31] = 0x0;
-        	fake.data[32] = 0x0;
-        	fake.data[33] = 0x0;
-        	fake.data[34] = 0x0;
-        	fake.data[35] = 0x0;
-        	for(int i = 0; i < size; i++)
-          {
-            fake.data[36+i] = message[i];
-          }
-          sum = checksum(&fake.data[20], 36+size, 0);
-        	fake.data[22] = ~sum >> 8; // Header checksum (b0)
-        	fake.data[23] = ~sum & 0xff; // Header checksum (b1)*/
 
 			send_packet(fake);
-        	/*printf("Data: ");
-          	for(int i = 28; i < 36; i++)
-            	printf("%02x ",fake.data[i]);
-          	printf("\n**************************\n\n");*/
 
             net.send_frame(&fake, 1518);
     	}
