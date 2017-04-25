@@ -17,7 +17,7 @@ message_queue arp_queue; // message queue for the ARP protocol stack
 
 octet curr_ip = 10;
 // const char * adap_name = "enp3s0";
-const char * adap_name = "eth0";
+const char * adap_name = "wlp2s0";
 
 std::map<int, octet *> cache;
 
@@ -82,7 +82,7 @@ void *ip_protocol_loop(void *arg)
   	int timer_no = 1;
   	cache_info temp;
   	int n = 0;
-  
+
   	while(1)
   	{
     	ip_queue.recv(&event,&buf,sizeof(buf));
@@ -305,14 +305,14 @@ void *main_protocol_loop(void *arg)
       int size = message.size();*/
 
       unsigned int concatd = (192 << 24) + (168 << 16) + (1 << 8) + 20;
-	
+
 		// check if target IP is in the lab
       	/*if (userReq[0] == 192 && userReq[1] == 168 && userReq[2] == 1)
       	{
         	printf("\n**************************\n");
 		    printf("Target IP is in the lab...\n");
     	}
-		else 
+		else
 		{
         	printf("\n**************************\n");
 		    printf("Target IP is NOT in the lab...\n");
@@ -407,7 +407,8 @@ pthread_t loop_thread, arp_thread, ip_thread, main_thread;
 //
 int main()
 {
-	net.open_net(adap_name);
+	int res = net.open_net(adap_name);
+  std::cout << res;
 	pthread_create(&loop_thread,NULL,protocol_loop,NULL);
 	pthread_create(&arp_thread,NULL,arp_protocol_loop,NULL);
 	pthread_create(&ip_thread,NULL,ip_protocol_loop,NULL);
